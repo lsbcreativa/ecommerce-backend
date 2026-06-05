@@ -1,15 +1,16 @@
 <section>
   <h1>Carrito</h1>
-  <p class="muted">ID: {{cart._id}}{{cart.id}}</p>
+  <p class="muted">ID: {{getId cart}}</p>
 
   {{#if cart.products.length}}
-    <table class="cart-table">
+    <table class="cart-table" id="cartTable" data-cid="{{getId cart}}">
       <thead>
         <tr>
           <th>Producto</th>
           <th>Precio</th>
           <th>Cantidad</th>
           <th>Subtotal</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -19,15 +20,23 @@
             <td>${{money this.product.price}}</td>
             <td>{{this.quantity}}</td>
             <td>${{money (multiply this.product.price this.quantity)}}</td>
+            <td>
+              <button class="btn danger small" data-remove="{{getId this.product}}">
+                Quitar
+              </button>
+            </td>
           </tr>
         {{/each}}
       </tbody>
     </table>
 
     <h2 class="total">Total: ${{money total}}</h2>
+    <button class="btn danger" id="emptyCartBtn">Vaciar carrito</button>
   {{else}}
     <p>El carrito está vacío.</p>
   {{/if}}
 
   <a class="btn ghost" href="/products">⬅ Seguir comprando</a>
 </section>
+
+<script src="/js/cart.js"></script>

@@ -25,12 +25,12 @@
       <h2>Listado actual</h2>
       <ul id="productList" class="rt-list">
         {{#each products}}
-          <li data-id="{{this._id}}{{this.id}}">
+          <li data-id="{{getId this}}">
             <span>
               <strong>{{this.title}}</strong> — ${{money this.price}}
               <small>({{this.category}}, stock {{this.stock}})</small>
             </span>
-            <button class="btn danger small" data-delete="{{this._id}}{{this.id}}">
+            <button class="btn danger small" data-delete="{{getId this}}">
               Eliminar
             </button>
           </li>

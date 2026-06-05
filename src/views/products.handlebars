@@ -13,7 +13,7 @@
         <p class="category">{{this.category}}</p>
         <p class="price">${{money this.price}}</p>
         <p class="stock">Stock: {{this.stock}}</p>
-        <a class="btn" href="/products/{{this._id}}{{this.id}}">Ver detalle</a>
+        <a class="btn" href="/products/{{getId this}}">Ver detalle</a>
       </article>
     {{else}}
       <p>No hay productos cargados todavía.</p>

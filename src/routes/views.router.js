@@ -58,7 +58,11 @@ router.get("/products/:pid", async (req, res, next) => {
     }
     res.render("productDetail", { title: product.title, product });
   } catch (error) {
-    next(error);
+    // ID inválido u otro error -> mostramos la vista de error
+    res.status(404).render("error", {
+      title: "No encontrado",
+      message: "Producto no encontrado",
+    });
   }
 });
 
@@ -81,7 +85,11 @@ router.get("/carts/:cid", async (req, res, next) => {
 
     res.render("cart", { title: "Carrito", cart, total });
   } catch (error) {
-    next(error);
+    // ID inválido u otro error -> mostramos la vista de error
+    res.status(404).render("error", {
+      title: "No encontrado",
+      message: "Carrito no encontrado",
+    });
   }
 });
 
