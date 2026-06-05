@@ -1,0 +1,32 @@
+<section>
+  <h1>Catálogo de productos</h1>
+
+  <div class="grid">
+    {{#each products}}
+      <article class="card">
+        {{#if this.thumbnails.length}}
+          <img class="card-img" src="{{this.thumbnails.[0]}}" alt="{{this.title}}" />
+        {{else}}
+          <div class="card-img placeholder">Sin imagen</div>
+        {{/if}}
+        <h3>{{this.title}}</h3>
+        <p class="category">{{this.category}}</p>
+        <p class="price">${{money this.price}}</p>
+        <p class="stock">Stock: {{this.stock}}</p>
+        <a class="btn" href="/products/{{this._id}}{{this.id}}">Ver detalle</a>
+      </article>
+    {{else}}
+      <p>No hay productos cargados todavía.</p>
+    {{/each}}
+  </div>
+
+  <div class="pagination">
+    {{#if hasPrevPage}}
+      <a class="btn" href="{{prevLink}}">⬅ Anterior</a>
+    {{/if}}
+    <span>Página {{page}} de {{totalPages}}</span>
+    {{#if hasNextPage}}
+      <a class="btn" href="{{nextLink}}">Siguiente ➡</a>
+    {{/if}}
+  </div>
+</section>

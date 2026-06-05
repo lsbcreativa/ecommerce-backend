@@ -1,0 +1,33 @@
+<section>
+  <h1>Carrito</h1>
+  <p class="muted">ID: {{cart._id}}{{cart.id}}</p>
+
+  {{#if cart.products.length}}
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Precio</th>
+          <th>Cantidad</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each cart.products}}
+          <tr>
+            <td>{{this.product.title}}</td>
+            <td>${{money this.product.price}}</td>
+            <td>{{this.quantity}}</td>
+            <td>${{money (multiply this.product.price this.quantity)}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <h2 class="total">Total: ${{money total}}</h2>
+  {{else}}
+    <p>El carrito está vacío.</p>
+  {{/if}}
+
+  <a class="btn ghost" href="/products">⬅ Seguir comprando</a>
+</section>

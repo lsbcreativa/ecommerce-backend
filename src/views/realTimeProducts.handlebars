@@ -1,0 +1,44 @@
+<section>
+  <h1>Productos en tiempo real ⚡</h1>
+  <p class="muted">
+    Esta vista se actualiza automáticamente vía WebSockets cuando se crea,
+    edita o elimina un producto.
+  </p>
+
+  <div class="realtime-grid">
+    <div class="form-panel">
+      <h2>Nuevo producto</h2>
+      <form id="productForm">
+        <input name="title" placeholder="Título" required />
+        <input name="description" placeholder="Descripción" required />
+        <input name="code" placeholder="Código (único)" required />
+        <input name="price" type="number" step="0.01" placeholder="Precio" required />
+        <input name="stock" type="number" placeholder="Stock" required />
+        <input name="category" placeholder="Categoría" required />
+        <input name="thumbnails" placeholder="URL imagen (opcional)" />
+        <button class="btn primary" type="submit">Crear producto</button>
+      </form>
+      <p id="formMsg" class="cart-msg"></p>
+    </div>
+
+    <div class="list-panel">
+      <h2>Listado actual</h2>
+      <ul id="productList" class="rt-list">
+        {{#each products}}
+          <li data-id="{{this._id}}{{this.id}}">
+            <span>
+              <strong>{{this.title}}</strong> — ${{money this.price}}
+              <small>({{this.category}}, stock {{this.stock}})</small>
+            </span>
+            <button class="btn danger small" data-delete="{{this._id}}{{this.id}}">
+              Eliminar
+            </button>
+          </li>
+        {{/each}}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/realtime.js"></script>

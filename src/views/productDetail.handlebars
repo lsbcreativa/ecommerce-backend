@@ -1,0 +1,31 @@
+<section class="detail">
+  <a class="btn ghost" href="/products">⬅ Volver al catálogo</a>
+
+  <div class="detail-card">
+    {{#if product.thumbnails.length}}
+      <img class="detail-img" src="{{product.thumbnails.[0]}}" alt="{{product.title}}" />
+    {{else}}
+      <div class="detail-img placeholder">Sin imagen</div>
+    {{/if}}
+
+    <div class="detail-info">
+      <h1>{{product.title}}</h1>
+      <p class="category">{{product.category}}</p>
+      <p class="description">{{product.description}}</p>
+      <p class="price big">${{money product.price}}</p>
+      <p class="stock">Stock disponible: {{product.stock}}</p>
+      <p class="code">Código: {{product.code}}</p>
+
+      <button
+        class="btn primary"
+        id="addToCartBtn"
+        data-pid="{{product._id}}{{product.id}}"
+      >
+        🛒 Agregar al carrito
+      </button>
+      <p id="cartMsg" class="cart-msg"></p>
+    </div>
+  </div>
+</section>
+
+<script src="/js/detail.js"></script>
