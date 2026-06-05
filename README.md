@@ -7,6 +7,8 @@ API de e-commerce que gestiona **productos**, **carritos de compra** y el
 
 Proyecto final de Backend.
 
+**Creado por [Andres Botta Dev](https://andresbotta.dev)** 🚀
+
 ![Catálogo](docs/ui-catalogo.png)
 
 ---

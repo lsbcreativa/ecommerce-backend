@@ -16,7 +16,7 @@
     "websockets",
     "handlebars"
   ],
-  "author": "",
+  "author": "Andres Botta Dev (https://andresbotta.dev)",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {

@@ -234,6 +234,9 @@ h2 { font-weight: 700; }
 
 /* ---------- Footer / error ---------- */
 .footer { background: var(--bg); color: #94a3b8; text-align: center; padding: 1.3rem; font-size: 0.85rem; }
+.footer-credit { margin-top: 0.4rem; font-size: 0.82rem; }
+.footer-credit a { color: #a5b4fc; font-weight: 600; text-decoration: none; transition: color 0.2s; }
+.footer-credit a:hover { color: #c7d2fe; text-decoration: underline; }
 .error-page { text-align: center; padding: 4rem 1rem; }
 .error-page h1 { font-size: 2.2rem; }
 .error-page p { color: var(--muted); margin: 1rem 0 2rem; }
