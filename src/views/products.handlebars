@@ -1,43 +1,56 @@
 <section>
-  <h1>Catálogo de productos</h1>
-  <p class="subtitle">Explorá, filtrá y agregá productos a tu carrito.</p>
+  <div class="hero">
+    <div>
+      <span class="hero-tag">⚡ Tienda online</span>
+      <h1>Encontrá tu próximo<br /><span class="hl">gadget favorito</span></h1>
+      <p class="subtitle">Tecnología, audio y accesorios. Envíos a todo el Perú.</p>
+    </div>
+    <div class="hero-stat">
+      <strong>{{totalDocs}}</strong>
+      <span>productos<br />en catálogo</span>
+    </div>
+  </div>
 
   <form class="toolbar" method="GET" action="/products">
-    <label>Orden:
+    <label>Orden
       <select name="sort" onchange="this.form.submit()">
         <option value="">Relevancia</option>
         <option value="asc" {{#if (eq sort "asc")}}selected{{/if}}>Precio: menor a mayor</option>
         <option value="desc" {{#if (eq sort "desc")}}selected{{/if}}>Precio: mayor a menor</option>
       </select>
     </label>
-    <label>Mostrar:
+    <label>Mostrar
       <select name="limit" onchange="this.form.submit()">
         <option value="6" {{#if (eq limit 6)}}selected{{/if}}>6</option>
         <option value="10" {{#if (eq limit 10)}}selected{{/if}}>10</option>
         <option value="20" {{#if (eq limit 20)}}selected{{/if}}>20</option>
       </select>
     </label>
-    <input type="text" name="query" placeholder="Filtrar por categoría..." value="{{query}}" />
+    <input type="text" name="query" placeholder="🔍 Filtrar por categoría..." value="{{query}}" />
     <button class="btn small" type="submit">Aplicar</button>
   </form>
 
   <div class="grid">
     {{#each products}}
       <article class="card">
-        {{#if this.thumbnails.length}}
-          <img class="card-img" src="{{this.thumbnails.[0]}}" alt="{{this.title}}" />
-        {{else}}
-          <div class="card-img placeholder">Sin imagen</div>
-        {{/if}}
-        <span class="badge-cat">{{this.category}}</span>
+        <div class="card-media">
+          {{#if this.thumbnails.length}}
+            <img class="card-img" src="{{this.thumbnails.[0]}}" alt="{{this.title}}" loading="lazy" />
+          {{else}}
+            <div class="card-img placeholder">Sin imagen</div>
+          {{/if}}
+          <span class="badge-cat overlay">{{this.category}}</span>
+        </div>
         <h3>{{this.title}}</h3>
-        <p class="price">{{soles this.price}}</p>
-        {{#if this.stock}}
-          <p class="stock">Stock: {{this.stock}}</p>
-        {{else}}
-          <p class="stock out">Sin stock</p>
-        {{/if}}
-        <a class="btn" href="/products/{{getId this}}">Ver detalle</a>
+        <div class="card-meta">
+          <span class="price">{{soles this.price}}</span>
+          {{#if this.stock}}
+            <span class="pill in">● {{this.stock}} u.</span>
+          {{else}}
+            <span class="pill out">Agotado</span>
+          {{/if}}
+        </div>
+        <a class="btn" href="/products/{{getId this}}">Ver detalle →</a>
       </article>
     {{else}}
       <p>No hay productos que coincidan con la búsqueda.</p>
@@ -46,11 +59,11 @@
 
   <div class="pagination">
     {{#if hasPrevPage}}
-      <a class="btn ghost" href="{{prevLink}}">⬅ Anterior</a>
+      <a class="btn ghost" href="{{prevLink}}">← Anterior</a>
     {{/if}}
-    <span>Página {{page}} de {{totalPages}}</span>
+    <span>Página {{page}} / {{totalPages}}</span>
     {{#if hasNextPage}}
-      <a class="btn ghost" href="{{nextLink}}">Siguiente ➡</a>
+      <a class="btn ghost" href="{{nextLink}}">Siguiente →</a>
     {{/if}}
   </div>
 </section>

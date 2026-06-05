@@ -44,6 +44,7 @@ router.get("/products", async (req, res, next) => {
       sort: sort || "",
       query: query || "",
       limit: Number(limit),
+      totalDocs: result.totalDocs,
     });
   } catch (error) {
     next(error);
