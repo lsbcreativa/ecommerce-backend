@@ -1,10 +1,13 @@
-# 🛒 E-commerce Backend — Node.js + Express + MongoDB
+# 🛍️ NodeShop — E-commerce Backend API
 
-API de e-commerce que gestiona **productos** y **carritos de compra**, con
-persistencia en **MongoDB (Mongoose)** y **FileSystem**, vistas con
-**Handlebars** y actualización en **tiempo real con WebSockets (Socket.IO)**.
+API de e-commerce que gestiona **productos**, **carritos de compra** y el
+**proceso de compra con generación de tickets**. Persistencia en **MongoDB
+(Mongoose)** y **FileSystem**, vistas con **Handlebars** y actualización en
+**tiempo real con WebSockets (Socket.IO)**.
 
 Proyecto final de Backend.
+
+![Catálogo](docs/ui-catalogo.png)
 
 ---
 
@@ -16,55 +19,51 @@ Proyecto final de Backend.
 - **FileSystem** (persistencia alternativa, no eliminada)
 - **Express-Handlebars** (motor de vistas)
 - **Socket.IO** (WebSockets / tiempo real)
+- **morgan** (logger de requests)
 - **dotenv**, **cors**
 
 ---
 
-## 📁 Estructura del proyecto
+## 🏛️ Arquitectura en capas
+
+```
+Cliente → Router → Controller → Service → DAO (Mongo | FS) → Base de datos
+                                   │
+                                   └── lógica de negocio (validaciones, compra)
+```
+
+- **Routers** (Express Router): definen las rutas.
+- **Controllers**: reciben la request, llaman al service y arman la respuesta.
+- **Services**: contienen la **lógica de negocio** (incluido el proceso de compra).
+- **DAO (Data Access Object)**: abstraen el acceso a datos (Mongo o FileSystem).
+- **Factory**: según `PERSISTENCE` (.env) decide qué DAO instanciar.
+- **Models**: esquemas de Mongoose (`products`, `carts`, `tickets`).
+- **Middlewares**: validación y manejo centralizado de errores.
+
+Este desacople permite **cambiar el motor de persistencia sin tocar la lógica**.
+
+### Estructura del proyecto
 
 ```
 ecommerce-backend/
 ├── src/
 │   ├── app.js                      # Servidor principal (puerto 8080)
-│   ├── config/
-│   │   ├── config.js               # Variables de entorno
-│   │   └── db.js                   # Conexión a MongoDB
-│   ├── controllers/                # Lógica de negocio
-│   │   ├── products.controller.js
-│   │   └── carts.controller.js
-│   ├── dao/                        # Data Access Object
-│   │   ├── factory.js              # Selecciona Mongo o FS según .env
-│   │   ├── models/                 # Modelos de Mongoose
-│   │   │   ├── product.model.js
-│   │   │   └── cart.model.js
+│   ├── config/                     # config + conexión a MongoDB
+│   ├── controllers/                # products / carts
+│   ├── services/                   # ← lógica de negocio (products, carts, compra)
+│   ├── dao/
+│   │   ├── factory.js              # Selecciona Mongo o FS
+│   │   ├── models/                 # product / cart / ticket (Mongoose)
 │   │   ├── mongo/                  # DAO MongoDB
-│   │   │   ├── ProductDaoMongo.js
-│   │   │   └── CartDaoMongo.js
 │   │   └── fs/                     # DAO FileSystem
-│   │       ├── ProductDaoFS.js
-│   │       └── CartDaoFS.js
 │   ├── data/                       # Persistencia FS (JSON)
-│   ├── middlewares/                # Middlewares (errores, validación)
-│   ├── routes/                     # Express Routers
-│   │   ├── products.router.js
-│   │   ├── carts.router.js
-│   │   └── views.router.js
-│   ├── sockets/                    # Configuración de Socket.IO
+│   ├── middlewares/                # errores + validación
+│   ├── routes/                     # products / carts / views
+│   ├── sockets/                    # Socket.IO
 │   ├── public/                     # CSS y JS de cliente
-│   ├── utils/                      # Helpers, seed, errores
+│   ├── utils/                      # helpers, seed, errores
 │   └── views/                      # Plantillas Handlebars
 └── package.json
-```
-
-### Arquitectura
-
-Se utiliza el patrón **DAO + Factory**: los *controllers* nunca saben si los
-datos vienen de MongoDB o de archivos. El `factory.js` decide qué DAO instanciar
-según la variable `PERSISTENCE` del archivo `.env`. Esto desacopla la lógica de
-negocio de la persistencia (inyección de dependencias).
-
-```
-Cliente → Router → Controller → DAO (Mongo | FS) → Base de datos
 ```
 
 ---
@@ -72,80 +71,45 @@ Cliente → Router → Controller → DAO (Mongo | FS) → Base de datos
 ## ⚙️ Instalación y ejecución
 
 ```bash
-# 1. Instalar dependencias
 npm install
-
-# 2. Configurar variables de entorno (.env ya incluido)
-#    PORT=8080
-#    MONGO_URL=mongodb://127.0.0.1:27017/ecommerce
-#    PERSISTENCE=mongo      # "mongo" o "fs"
-
-# 3. (Opcional) Cargar productos de ejemplo
-npm run seed
-
-# 4. Iniciar el servidor
-npm start          # producción
-npm run dev        # desarrollo (nodemon)
+# Configurar .env (ver .env.example): PORT, MONGO_URL, PERSISTENCE
+npm run seed     # (opcional) carga 12 productos de ejemplo
+npm start        # o: npm run dev (nodemon)
 ```
 
-Servidor en: **http://localhost:8080**
+Servidor en **http://localhost:8080**
 
-| Recurso            | URL                                   |
-| ------------------ | ------------------------------------- |
-| API Productos      | http://localhost:8080/api/products    |
-| API Carritos       | http://localhost:8080/api/carts       |
-| Vista Productos    | http://localhost:8080/products        |
-| Detalle Producto   | http://localhost:8080/products/:pid   |
-| Vista Carrito      | http://localhost:8080/carts/:cid      |
-| Tiempo Real        | http://localhost:8080/realtimeproducts|
+| Recurso          | URL                                    |
+| ---------------- | -------------------------------------- |
+| API Productos    | http://localhost:8080/api/products     |
+| API Carritos     | http://localhost:8080/api/carts        |
+| Health check     | http://localhost:8080/api/health       |
+| Catálogo         | http://localhost:8080/products         |
+| Detalle          | http://localhost:8080/products/:pid    |
+| Carrito          | http://localhost:8080/carts/:cid       |
+| Tiempo real      | http://localhost:8080/realtimeproducts |
 
 ---
 
 ## 📦 Endpoints — Productos `/api/products`
 
-| Método | Ruta              | Descripción                                    |
-| ------ | ----------------- | ---------------------------------------------- |
-| GET    | `/`               | Lista con `limit`, `page`, `query`, `sort`     |
-| GET    | `/:pid`           | Obtiene un producto por ID                     |
-| POST   | `/`               | Crea un producto (ID autogenerado)             |
-| PUT    | `/:pid`           | Actualiza un producto (no modifica el ID)      |
-| DELETE | `/:pid`           | Elimina un producto                            |
+| Método | Ruta      | Descripción                                |
+| ------ | --------- | ------------------------------------------ |
+| GET    | `/`       | Lista con `limit`, `page`, `query`, `sort` |
+| GET    | `/:pid`   | Obtiene un producto por ID                 |
+| POST   | `/`       | Crea un producto (ID autogenerado)         |
+| PUT    | `/:pid`   | Actualiza un producto (no modifica el ID)  |
+| DELETE | `/:pid`   | Elimina un producto                        |
 
-**Query params del GET:**
-- `limit` (def. 10), `page` (def. 1)
-- `query`: filtro por categoría o disponibilidad
-  (`category:tecnologia`, `status:true`, o texto simple = categoría)
-- `sort`: `asc` | `desc` (por precio)
+`query`: `category:tecnologia`, `status:true`/`status:false`, o texto = categoría.
+`sort`: `asc` | `desc` (por precio). Defaults: `limit=10`, `page=1`.
 
-**Formato de respuesta del GET /api/products:**
-
+**Formato de respuesta del GET:**
 ```json
 {
-  "status": "success",
-  "payload": [],
-  "totalPages": 0,
-  "prevPage": null,
-  "nextPage": null,
-  "page": 1,
-  "hasPrevPage": false,
-  "hasNextPage": false,
-  "prevLink": null,
-  "nextLink": null
-}
-```
-
-### Body para crear/actualizar producto
-
-```json
-{
-  "title": "Notebook Lenovo",
-  "description": "14'' Ryzen 5, 16GB RAM",
-  "code": "NB-001",
-  "price": 850,
-  "status": true,
-  "stock": 12,
-  "category": "tecnologia",
-  "thumbnails": ["https://..."]
+  "status": "success", "payload": [],
+  "totalPages": 0, "prevPage": null, "nextPage": null, "page": 1,
+  "hasPrevPage": false, "hasNextPage": false, "prevLink": null, "nextLink": null
 }
 ```
 
@@ -153,43 +117,58 @@ Servidor en: **http://localhost:8080**
 
 ## 🛒 Endpoints — Carritos `/api/carts`
 
-| Método | Ruta                          | Descripción                                  |
-| ------ | ----------------------------- | -------------------------------------------- |
-| POST   | `/`                           | Crea un carrito (ID autogenerado)            |
-| GET    | `/:cid`                       | Lista productos del carrito (con `populate`) |
-| POST   | `/:cid/products/:pid`         | Agrega producto (si existe, suma cantidad)   |
-| DELETE | `/:cid/products/:pid`         | Elimina un producto del carrito              |
-| PUT    | `/:cid`                       | Reemplaza todos los productos del carrito    |
-| PUT    | `/:cid/products/:pid`         | Actualiza solo la cantidad de un producto    |
-| DELETE | `/:cid`                       | Vacía el carrito completo                    |
+| Método | Ruta                      | Descripción                                  |
+| ------ | ------------------------- | -------------------------------------------- |
+| POST   | `/`                       | Crea un carrito                              |
+| GET    | `/:cid`                   | Lista productos del carrito (con `populate`) |
+| POST   | `/:cid/products/:pid`     | Agrega producto (si existe, suma cantidad)   |
+| DELETE | `/:cid/products/:pid`     | Elimina un producto del carrito              |
+| PUT    | `/:cid`                   | Reemplaza todos los productos                |
+| PUT    | `/:cid/products/:pid`     | Actualiza solo la cantidad                   |
+| DELETE | `/:cid`                   | Vacía el carrito                             |
+| POST   | `/:cid/purchase`          | **Finaliza la compra y genera un ticket**    |
 
-**Body PUT `/:cid`** (reemplaza todo):
+### Proceso de compra (`POST /:cid/purchase`)
+1. Verifica el **stock** de cada producto del carrito.
+2. Compra los que tienen stock suficiente y **descuenta el stock**.
+3. Genera un **ticket** (código único, fecha, monto total, comprador, detalle).
+4. Deja en el carrito los productos que **no** se pudieron comprar.
+
 ```json
-{ "products": [ { "product": "<idProducto>", "quantity": 2 } ] }
+{
+  "status": "success",
+  "message": "Compra realizada con éxito",
+  "payload": {
+    "ticket": { "code": "TCK-47EC2F5B", "amount": 140, "purchaser": "...", "products": [...] },
+    "purchased": [...],
+    "failedProducts": []
+  }
+}
 ```
-
-**Body PUT `/:cid/products/:pid`** (solo cantidad):
-```json
-{ "quantity": 5 }
-```
-
----
-
-## ⚡ Tiempo real (WebSockets)
-
-La vista `/realtimeproducts` permite **crear y eliminar productos**, y la lista
-se actualiza automáticamente en todos los navegadores conectados sin recargar,
-mediante el evento `products:updated` emitido por el servidor.
 
 ---
 
 ## 🗄️ Persistencia
 
-- **MongoDB** (por defecto): base de datos `ecommerce`, colecciones `products`
-  y `carts`. El carrito guarda referencias a productos y usa `populate` para
-  traer la información completa.
-- **FileSystem**: cambiando `PERSISTENCE=fs` en `.env`, los datos se guardan en
-  `src/data/products.json` y `src/data/carts.json`.
+- **MongoDB** (por defecto): base `ecommerce`, colecciones `products`, `carts`,
+  `tickets`. El carrito guarda referencias y usa `populate`.
+- **FileSystem** (`PERSISTENCE=fs`): `src/data/*.json`.
+
+---
+
+## ⚡ Tiempo real (WebSockets)
+
+La vista `/realtimeproducts` permite crear y eliminar productos; la lista se
+actualiza automáticamente en todos los clientes conectados mediante el evento
+`products:updated`.
+
+---
+
+## 🖼️ Capturas
+
+| Detalle de producto | Tiempo real |
+| --- | --- |
+| ![Detalle](docs/ui-detalle.png) | ![Tiempo real](docs/ui-tiemporeal.png) |
 
 ---
 
@@ -197,11 +176,13 @@ mediante el evento `products:updated` emitido por el servidor.
 
 - [x] Servidor Node.js + Express en el puerto 8080
 - [x] Express Router (`/api/products`, `/api/carts`, vistas)
-- [x] Middlewares (manejo de errores y validación)
+- [x] Middlewares (validación y manejo de errores)
 - [x] Asincronía con `async/await`
 - [x] Mongoose con modelos y relaciones (`populate`)
 - [x] CRUD completo de productos y carritos
 - [x] Paginación, filtros y ordenamiento
 - [x] WebSockets para tiempo real
 - [x] Persistencia dual MongoDB + FileSystem (DAO + Factory)
+- [x] **Arquitectura en capas con Services**
+- [x] **Proceso de compra con generación de tickets**
 - [x] Código modular y organizado

@@ -1,5 +1,25 @@
 <section>
   <h1>Catálogo de productos</h1>
+  <p class="subtitle">Explorá, filtrá y agregá productos a tu carrito.</p>
+
+  <form class="toolbar" method="GET" action="/products">
+    <label>Orden:
+      <select name="sort" onchange="this.form.submit()">
+        <option value="">Relevancia</option>
+        <option value="asc" {{#if (eq sort "asc")}}selected{{/if}}>Precio: menor a mayor</option>
+        <option value="desc" {{#if (eq sort "desc")}}selected{{/if}}>Precio: mayor a menor</option>
+      </select>
+    </label>
+    <label>Mostrar:
+      <select name="limit" onchange="this.form.submit()">
+        <option value="6" {{#if (eq limit 6)}}selected{{/if}}>6</option>
+        <option value="10" {{#if (eq limit 10)}}selected{{/if}}>10</option>
+        <option value="20" {{#if (eq limit 20)}}selected{{/if}}>20</option>
+      </select>
+    </label>
+    <input type="text" name="query" placeholder="Filtrar por categoría..." value="{{query}}" />
+    <button class="btn small" type="submit">Aplicar</button>
+  </form>
 
   <div class="grid">
     {{#each products}}
@@ -9,24 +29,28 @@
         {{else}}
           <div class="card-img placeholder">Sin imagen</div>
         {{/if}}
+        <span class="badge-cat">{{this.category}}</span>
         <h3>{{this.title}}</h3>
-        <p class="category">{{this.category}}</p>
         <p class="price">${{money this.price}}</p>
-        <p class="stock">Stock: {{this.stock}}</p>
+        {{#if this.stock}}
+          <p class="stock">Stock: {{this.stock}}</p>
+        {{else}}
+          <p class="stock out">Sin stock</p>
+        {{/if}}
         <a class="btn" href="/products/{{getId this}}">Ver detalle</a>
       </article>
     {{else}}
-      <p>No hay productos cargados todavía.</p>
+      <p>No hay productos que coincidan con la búsqueda.</p>
     {{/each}}
   </div>
 
   <div class="pagination">
     {{#if hasPrevPage}}
-      <a class="btn" href="{{prevLink}}">⬅ Anterior</a>
+      <a class="btn ghost" href="{{prevLink}}">⬅ Anterior</a>
     {{/if}}
     <span>Página {{page}} de {{totalPages}}</span>
     {{#if hasNextPage}}
-      <a class="btn" href="{{nextLink}}">Siguiente ➡</a>
+      <a class="btn ghost" href="{{nextLink}}">Siguiente ➡</a>
     {{/if}}
   </div>
 </section>

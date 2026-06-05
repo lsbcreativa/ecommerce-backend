@@ -1,20 +1,22 @@
-// Lógica del botón "Agregar al carrito" en la vista de detalle.
-// Reutiliza un carrito guardado en localStorage; si no existe, lo crea.
+// Botón "Agregar al carrito": reutiliza el carrito guardado o crea uno nuevo.
 const addBtn = document.getElementById("addToCartBtn");
-const cartMsg = document.getElementById("cartMsg");
 
 async function getOrCreateCart() {
-  let cartId = localStorage.getItem("cartId");
-  if (cartId) return cartId;
-
+  let cartId = window.getActiveCartId();
+  if (cartId) {
+    // Verificamos que el carrito siga existiendo
+    const check = await fetch(`/api/carts/${cartId}`);
+    if (check.ok) return cartId;
+  }
   const res = await fetch("/api/carts", { method: "POST" });
   const data = await res.json();
   cartId = data.payload._id || data.payload.id;
-  localStorage.setItem("cartId", cartId);
+  window.setActiveCartId(cartId);
   return cartId;
 }
 
-addBtn.addEventListener("click", async () => {
+addBtn?.addEventListener("click", async () => {
+  addBtn.disabled = true;
   try {
     const pid = addBtn.dataset.pid;
     const cartId = await getOrCreateCart();
@@ -24,12 +26,15 @@ addBtn.addEventListener("click", async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ quantity: 1 }),
     });
-
     if (!res.ok) throw new Error("No se pudo agregar el producto");
 
-    cartMsg.innerHTML = `✅ Agregado. <a href="/carts/${cartId}">Ver carrito</a>`;
+    await window.updateCartBadge();
+    window.showToast(
+      `✅ Producto agregado. <a href="/carts/${cartId}">Ver carrito</a>`
+    );
   } catch (err) {
-    cartMsg.style.color = "#dc2626";
-    cartMsg.textContent = "❌ " + err.message;
+    window.showToast("❌ " + err.message, "error");
+  } finally {
+    addBtn.disabled = false;
   }
 });

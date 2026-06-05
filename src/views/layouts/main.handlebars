@@ -3,15 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{title}} | E-commerce</title>
+  <title>{{title}} | NodeShop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body>
   <header class="navbar">
-    <a class="brand" href="/products">🛒 E-commerce</a>
-    <nav>
-      <a href="/products">Productos</a>
+    <a class="brand" href="/products">
+      <span class="brand-logo">🛍️</span> NodeShop
+    </a>
+    <nav class="nav-links">
+      <a href="/products">Catálogo</a>
       <a href="/realtimeproducts">Tiempo real</a>
+      <a class="cart-link" href="#" id="cartLink">
+        🛒 <span class="cart-badge" id="cartCount">0</span>
+      </a>
     </nav>
   </header>
 
@@ -20,7 +27,10 @@
   </main>
 
   <footer class="footer">
-    <p>Proyecto Backend — Node.js · Express · MongoDB · WebSockets</p>
+    <p>NodeShop · API E-commerce — Node.js · Express · MongoDB · Socket.IO</p>
   </footer>
+
+  <div id="toastContainer" class="toast-container"></div>
+  <script src="/js/app.js"></script>
 </body>
 </html>

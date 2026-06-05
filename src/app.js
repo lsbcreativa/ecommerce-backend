@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const morgan = require("morgan");
 const path = require("path");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -27,6 +28,7 @@ if (config.persistence === "mongo") {
 
 // ---------- Middlewares globales ----------
 app.use(cors());
+app.use(morgan("dev")); // logger de requests HTTP
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
@@ -45,6 +47,16 @@ app.engine(
 );
 app.set("view engine", "handlebars");
 app.set("views", path.join(__dirname, "views"));
+
+// ---------- Health check ----------
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "success",
+    message: "Servidor operativo",
+    persistence: config.persistence,
+    uptime: Math.round(process.uptime()) + "s",
+  });
+});
 
 // ---------- Rutas de la API ----------
 app.use("/api/products", productsRouter);

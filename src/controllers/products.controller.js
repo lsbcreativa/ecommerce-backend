@@ -1,5 +1,4 @@
-const { productDao } = require("../dao/factory");
-const CustomError = require("../utils/CustomError");
+const productsService = require("../services/products.service");
 
 // Helper: construye prevLink / nextLink conservando los query params actuales.
 const buildLink = (req, page) => {
@@ -7,7 +6,6 @@ const buildLink = (req, page) => {
   const url = new URL(
     `${req.protocol}://${req.get("host")}${req.baseUrl}${req.path}`
   );
-  // Copiamos los query params actuales y reemplazamos la página
   Object.entries(req.query).forEach(([key, value]) => {
     if (key !== "page") url.searchParams.set(key, value);
   });
@@ -15,12 +13,19 @@ const buildLink = (req, page) => {
   return url.pathname + url.search;
 };
 
+// Emite la lista actualizada de productos a todos los sockets conectados.
+const emitUpdatedProducts = async (req) => {
+  const io = req.app.get("io");
+  if (!io) return;
+  const result = await productsService.getProducts({ limit: 100, page: 1 });
+  io.emit("products:updated", result.docs);
+};
+
 // GET /api/products  -> listado con limit, page, query, sort
 const getProducts = async (req, res, next) => {
   try {
     const { limit = 10, page = 1, query, sort } = req.query;
-
-    const result = await productDao.getProducts({ limit, page, query, sort });
+    const result = await productsService.getProducts({ limit, page, query, sort });
 
     res.json({
       status: "success",
@@ -42,10 +47,7 @@ const getProducts = async (req, res, next) => {
 // GET /api/products/:pid
 const getProductById = async (req, res, next) => {
   try {
-    const { pid } = req.params;
-    const product = await productDao.getProductById(pid);
-    if (!product) throw new CustomError("Producto no encontrado", 404);
-
+    const product = await productsService.getProductById(req.params.pid);
     res.json({ status: "success", payload: product });
   } catch (error) {
     next(error);
@@ -58,7 +60,7 @@ const createProduct = async (req, res, next) => {
     const { title, description, code, price, status, stock, category, thumbnails } =
       req.body;
 
-    const newProduct = await productDao.createProduct({
+    const newProduct = await productsService.createProduct({
       title,
       description,
       code,
@@ -69,15 +71,9 @@ const createProduct = async (req, res, next) => {
       thumbnails: thumbnails || [],
     });
 
-    // Notificamos a los clientes conectados por WebSocket
     await emitUpdatedProducts(req);
-
     res.status(201).json({ status: "success", payload: newProduct });
   } catch (error) {
-    // Manejo de código duplicado (índice unique)
-    if (error.code === 11000) {
-      return next(new CustomError("El código (code) ya existe", 400));
-    }
     next(error);
   }
 };
@@ -85,12 +81,8 @@ const createProduct = async (req, res, next) => {
 // PUT /api/products/:pid  -> actualiza (sin modificar id)
 const updateProduct = async (req, res, next) => {
   try {
-    const { pid } = req.params;
-    const updated = await productDao.updateProduct(pid, req.body);
-    if (!updated) throw new CustomError("Producto no encontrado", 404);
-
+    const updated = await productsService.updateProduct(req.params.pid, req.body);
     await emitUpdatedProducts(req);
-
     res.json({ status: "success", payload: updated });
   } catch (error) {
     next(error);
@@ -100,24 +92,12 @@ const updateProduct = async (req, res, next) => {
 // DELETE /api/products/:pid
 const deleteProduct = async (req, res, next) => {
   try {
-    const { pid } = req.params;
-    const deleted = await productDao.deleteProduct(pid);
-    if (!deleted) throw new CustomError("Producto no encontrado", 404);
-
+    const deleted = await productsService.deleteProduct(req.params.pid);
     await emitUpdatedProducts(req);
-
     res.json({ status: "success", message: "Producto eliminado", payload: deleted });
   } catch (error) {
     next(error);
   }
-};
-
-// Emite la lista actualizada de productos a todos los sockets conectados.
-const emitUpdatedProducts = async (req) => {
-  const io = req.app.get("io");
-  if (!io) return;
-  const result = await productDao.getProducts({ limit: 100, page: 1 });
-  io.emit("products:updated", result.docs);
 };
 
 module.exports = {

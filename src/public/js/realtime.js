@@ -43,11 +43,10 @@ productForm.addEventListener("submit", async (e) => {
     if (!res.ok) throw new Error(data.error || "Error al crear");
 
     productForm.reset();
-    formMsg.style.color = "#059669";
-    formMsg.textContent = "✅ Producto creado";
+    if (formMsg) formMsg.textContent = "";
+    window.showToast("✅ Producto creado");
   } catch (err) {
-    formMsg.style.color = "#dc2626";
-    formMsg.textContent = "❌ " + err.message;
+    window.showToast("❌ " + err.message, "error");
   }
 });
 
@@ -60,8 +59,8 @@ productList.addEventListener("click", async (e) => {
   try {
     const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("No se pudo eliminar");
+    window.showToast("🗑️ Producto eliminado");
   } catch (err) {
-    formMsg.style.color = "#dc2626";
-    formMsg.textContent = "❌ " + err.message;
+    window.showToast("❌ " + err.message, "error");
   }
 });

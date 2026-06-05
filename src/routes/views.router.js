@@ -1,5 +1,6 @@
 const { Router } = require("express");
-const { productDao, cartDao } = require("../dao/factory");
+const productsService = require("../services/products.service");
+const cartsService = require("../services/carts.service");
 
 const router = Router();
 
@@ -9,7 +10,7 @@ router.get("/", (req, res) => res.redirect("/products"));
 // Vista de productos en tiempo real (WebSockets)
 router.get("/realtimeproducts", async (req, res, next) => {
   try {
-    const result = await productDao.getProducts({ limit: 100, page: 1 });
+    const result = await productsService.getProducts({ limit: 100, page: 1 });
     res.render("realTimeProducts", {
       title: "Productos en tiempo real",
       products: result.docs,
@@ -23,7 +24,7 @@ router.get("/realtimeproducts", async (req, res, next) => {
 router.get("/products", async (req, res, next) => {
   try {
     const { limit = 10, page = 1, query, sort } = req.query;
-    const result = await productDao.getProducts({ limit, page, query, sort });
+    const result = await productsService.getProducts({ limit, page, query, sort });
 
     const buildLink = (p) => {
       if (!p) return null;
@@ -40,6 +41,9 @@ router.get("/products", async (req, res, next) => {
       hasNextPage: result.hasNextPage,
       prevLink: buildLink(result.prevPage),
       nextLink: buildLink(result.nextPage),
+      sort: sort || "",
+      query: query || "",
+      limit: Number(limit),
     });
   } catch (error) {
     next(error);
@@ -49,7 +53,7 @@ router.get("/products", async (req, res, next) => {
 // /products/:pid -> detalle del producto con opción de agregar al carrito
 router.get("/products/:pid", async (req, res, next) => {
   try {
-    const product = await productDao.getProductById(req.params.pid);
+    const product = await productsService.getProductById(req.params.pid);
     if (!product) {
       return res.status(404).render("error", {
         title: "No encontrado",
@@ -69,7 +73,7 @@ router.get("/products/:pid", async (req, res, next) => {
 // /carts/:cid -> visualización de un carrito específico
 router.get("/carts/:cid", async (req, res, next) => {
   try {
-    const cart = await cartDao.getCartById(req.params.cid);
+    const cart = await cartsService.getCartById(req.params.cid);
     if (!cart) {
       return res.status(404).render("error", {
         title: "No encontrado",

@@ -1,40 +1,52 @@
 <section>
-  <h1>Carrito</h1>
+  <h1>Tu carrito</h1>
   <p class="muted">ID: {{getId cart}}</p>
 
-  {{#if cart.products.length}}
-    <table class="cart-table" id="cartTable" data-cid="{{getId cart}}">
-      <thead>
-        <tr>
-          <th>Producto</th>
-          <th>Precio</th>
-          <th>Cantidad</th>
-          <th>Subtotal</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each cart.products}}
-          <tr>
-            <td>{{this.product.title}}</td>
-            <td>${{money this.product.price}}</td>
-            <td>{{this.quantity}}</td>
-            <td>${{money (multiply this.product.price this.quantity)}}</td>
-            <td>
-              <button class="btn danger small" data-remove="{{getId this.product}}">
-                Quitar
-              </button>
-            </td>
-          </tr>
-        {{/each}}
-      </tbody>
-    </table>
+  <div id="ticketArea"></div>
 
-    <h2 class="total">Total: ${{money total}}</h2>
-    <button class="btn danger" id="emptyCartBtn">Vaciar carrito</button>
-  {{else}}
-    <p>El carrito está vacío.</p>
-  {{/if}}
+  <div id="cartContent">
+    {{#if cart.products.length}}
+      <table class="cart-table" id="cartTable" data-cid="{{getId cart}}">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each cart.products}}
+            <tr>
+              <td>{{this.product.title}}</td>
+              <td>${{money this.product.price}}</td>
+              <td>{{this.quantity}}</td>
+              <td>${{money (multiply this.product.price this.quantity)}}</td>
+              <td>
+                <button class="btn danger small" data-remove="{{getId this.product}}">
+                  Quitar
+                </button>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+      <h2 class="total">Total: <span>${{money total}}</span></h2>
+
+      <div class="cart-actions">
+        <button class="btn primary" id="checkoutBtn" data-cid="{{getId cart}}">
+          💳 Finalizar compra
+        </button>
+        <button class="btn danger" id="emptyCartBtn" data-cid="{{getId cart}}">
+          Vaciar carrito
+        </button>
+      </div>
+    {{else}}
+      <p class="subtitle">El carrito está vacío.</p>
+    {{/if}}
+  </div>
 
   <a class="btn ghost" href="/products">⬅ Seguir comprando</a>
 </section>
