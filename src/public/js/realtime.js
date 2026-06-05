@@ -18,7 +18,7 @@ socket.on("products:updated", (products) => {
     li.dataset.id = id;
     li.innerHTML = `
       <span>
-        <strong>${p.title}</strong> — $${Number(p.price).toFixed(2)}
+        <strong>${p.title}</strong> — ${window.soles(p.price)}
         <small>(${p.category}, stock ${p.stock})</small>
       </span>
       <button class="btn danger small" data-delete="${id}">Eliminar</button>`;

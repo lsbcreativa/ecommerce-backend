@@ -49,9 +49,9 @@ checkoutBtn?.addEventListener("click", async () => {
     const filas = (t.products || [])
       .map(
         (p) =>
-          `<div class="ticket-row"><span>${p.title} x${p.quantity}</span><span>$${(
+          `<div class="ticket-row"><span>${p.title} x${p.quantity}</span><span>${window.soles(
             p.price * p.quantity
-          ).toFixed(2)}</span></div>`
+          )}</span></div>`
       )
       .join("");
 
@@ -63,7 +63,7 @@ checkoutBtn?.addEventListener("click", async () => {
         <div class="ticket-row"><span>Comprador</span><span>${t.purchaser}</span></div>
         ${filas}
         <div class="ticket-row" style="font-weight:700;border:none;margin-top:.4rem">
-          <span>TOTAL</span><span>$${Number(t.amount).toFixed(2)}</span>
+          <span>TOTAL</span><span>${window.soles(t.amount)}</span>
         </div>
       </div>`;
 

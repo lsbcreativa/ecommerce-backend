@@ -20,9 +20,9 @@
           {{#each cart.products}}
             <tr>
               <td>{{this.product.title}}</td>
-              <td>${{money this.product.price}}</td>
+              <td>{{soles this.product.price}}</td>
               <td>{{this.quantity}}</td>
-              <td>${{money (multiply this.product.price this.quantity)}}</td>
+              <td>{{soles (multiply this.product.price this.quantity)}}</td>
               <td>
                 <button class="btn danger small" data-remove="{{getId this.product}}">
                   Quitar
@@ -33,7 +33,7 @@
         </tbody>
       </table>
 
-      <h2 class="total">Total: <span>${{money total}}</span></h2>
+      <h2 class="total">Total: <span>{{soles total}}</span></h2>
 
       <div class="cart-actions">
         <button class="btn primary" id="checkoutBtn" data-cid="{{getId cart}}">

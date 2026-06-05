@@ -8,6 +8,12 @@ module.exports = {
   inc: (value) => Number(value) + 1,
   // Formatea a precio con 2 decimales
   money: (value) => Number(value || 0).toFixed(2),
+  // Formatea en Soles peruanos: S/ 1,234.00
+  soles: (value) =>
+    new Intl.NumberFormat("es-PE", {
+      style: "currency",
+      currency: "PEN",
+    }).format(Number(value || 0)),
   // Devuelve el id correcto sin importar la persistencia:
   // MongoDB usa _id (ObjectId) y FileSystem usa id (string).
   getId: (obj) => String(obj?._id ?? obj?.id ?? ""),

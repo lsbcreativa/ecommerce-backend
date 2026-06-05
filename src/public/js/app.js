@@ -1,5 +1,11 @@
 // Utilidades globales: sistema de toasts y contador de carrito en la navbar.
 
+// Formateo de precios en Soles peruanos (S/ 1,234.00)
+window.soles = (value) =>
+  new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" }).format(
+    Number(value || 0)
+  );
+
 // ---- Toasts (notificaciones) ----
 window.showToast = (message, type = "success") => {
   const container = document.getElementById("toastContainer");

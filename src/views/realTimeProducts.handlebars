@@ -27,7 +27,7 @@
         {{#each products}}
           <li data-id="{{getId this}}">
             <span>
-              <strong>{{this.title}}</strong> — ${{money this.price}}
+              <strong>{{this.title}}</strong> — {{soles this.price}}
               <small>({{this.category}}, stock {{this.stock}})</small>
             </span>
             <button class="btn danger small" data-delete="{{getId this}}">

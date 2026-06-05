@@ -12,7 +12,7 @@
       <span class="badge-cat">{{product.category}}</span>
       <h1>{{product.title}}</h1>
       <p class="description">{{product.description}}</p>
-      <p class="price big">${{money product.price}}</p>
+      <p class="price big">{{soles product.price}}</p>
       {{#if product.stock}}
         <p class="stock">✅ {{product.stock}} unidades disponibles</p>
       {{else}}

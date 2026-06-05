@@ -31,7 +31,7 @@
         {{/if}}
         <span class="badge-cat">{{this.category}}</span>
         <h3>{{this.title}}</h3>
-        <p class="price">${{money this.price}}</p>
+        <p class="price">{{soles this.price}}</p>
         {{#if this.stock}}
           <p class="stock">Stock: {{this.stock}}</p>
         {{else}}
