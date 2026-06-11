@@ -75,9 +75,17 @@ ecommerce-backend/
 ```bash
 npm install
 # Configurar .env (ver .env.example): PORT, MONGO_URL, PERSISTENCE
-npm run seed     # (opcional) carga 12 productos de ejemplo
+npm run seed     # (opcional) carga 12 productos de ejemplo (precios en Soles S/)
 npm start        # o: npm run dev (nodemon)
 ```
+
+### Scripts disponibles
+
+| Script         | Acción                                          |
+| -------------- | ----------------------------------------------- |
+| `npm start`    | Inicia el servidor (`node src/app.js`)          |
+| `npm run dev`  | Inicia con recarga automática (nodemon)         |
+| `npm run seed` | Carga productos de ejemplo en MongoDB           |
 
 Servidor en **http://localhost:8080**
 
@@ -167,6 +175,10 @@ actualiza automáticamente en todos los clientes conectados mediante el evento
 ---
 
 ## 🖼️ Capturas
+
+**Catálogo**
+
+![Catálogo](docs/ui-catalogo.png)
 
 | Detalle de producto | Tiempo real |
 | --- | --- |
