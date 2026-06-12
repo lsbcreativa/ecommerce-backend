@@ -170,7 +170,9 @@ Servidor en **http://localhost:8080**
 
 La vista `/realtimeproducts` permite crear y eliminar productos; la lista se
 actualiza automáticamente en todos los clientes conectados mediante el evento
-`products:updated`.
+`products:updated`, **sin recargar la página**.
+
+![Demo en tiempo real](docs/realtime.gif)
 
 ---
 
@@ -180,9 +182,9 @@ actualiza automáticamente en todos los clientes conectados mediante el evento
 
 ![Catálogo](docs/ui-catalogo.png)
 
-| Detalle de producto | Tiempo real |
-| --- | --- |
-| ![Detalle](docs/ui-detalle.png) | ![Tiempo real](docs/ui-tiemporeal.png) |
+**Detalle de producto**
+
+![Detalle](docs/ui-detalle.png)
 
 ---
 
